@@ -57,9 +57,6 @@ const UserContextProvider = props => {
         age.push(moment(`${x.Death}`).diff(moment(`${x.Birth}`), 'years')) : 
         age.push(moment(moment()).diff(moment(`${x.Birth}`), 'years'))
     )
-        
-
-    console.log(age);
 
     var len = name.length;
     var data = []
