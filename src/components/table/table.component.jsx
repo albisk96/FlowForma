@@ -5,9 +5,8 @@ import Overlay from '../button/overlay.component';
 import Spinner from '../spinner/spinner.component';
 
 const UserTable = ({ style }) => {
-    const { data, isLoading, date } = useContext(UserContext);
+    const { data, isLoading } = useContext(UserContext);
     const [sort, setSort] = useState([]);
-    const dataLen = date.length
 
     const onSort = (event, sortKey) => {
         const sortData = data;
@@ -15,7 +14,13 @@ const UserTable = ({ style }) => {
         setSort({sortData})
       }
 
-    const render = isLoading || dataLen === 0 ? <Spinner /> 
+    const sortInt = (event, sortKey) => {
+        const sortData = data;
+        sortData.sort((a, b) => a[sortKey] - b[sortKey]);
+        setSort({sortData});
+    }
+
+    const render = isLoading ? <Spinner /> 
         : <Table striped bordered size="sm" style={style}>
             <thead>
                 <tr>
@@ -25,7 +30,9 @@ const UserTable = ({ style }) => {
                 <Overlay>
                     <th onClick={e => onSort(e, 'tech')}>Technology</th>
                 </Overlay>
-                <th>Age</th>
+                <Overlay>
+                    <th onClick={e => sortInt(e, 'years')}>Age</th>
+                </Overlay>
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +41,7 @@ const UserTable = ({ style }) => {
                         <Fragment>
                             <td>{x.name}</td>
                             <td>{x.tech}</td>
-                            <td>{x.year}</td>
+                            <td>{x.years}</td>
                         </Fragment>
                     </tr>
                 ))}

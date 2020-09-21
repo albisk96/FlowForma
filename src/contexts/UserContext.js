@@ -5,10 +5,7 @@ import moment from 'moment';
 export const UserContext = createContext()
 
 const UserContextProvider = props => {
-
-    const [name, setName] = useState([]);
-    const [tech, setTech] = useState([]);
-    const [date, setDate] = useState([]);
+    const [data, setData] = useState([]);
     const [matrix, setMatrix] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -23,26 +20,40 @@ const UserContextProvider = props => {
       baseURL: `http://78.63.13.74:3006/FlowFormaAPI`
     })
 
-    const GetName = () => {
-        api.get('/names').then( result => {
-            const names = result.data;
-            setName(result.data)
-            const year = names.map( name => {
-                return api.get(`/getDate/${name}`).then( res => res.data)
-            })
-            Promise.all(year).then(data => {
-                setDate(data);
-            })
-        })
-    }
+     const getYear = (name) => {
+      const year = api.get(`/getDate/${name}`).then(res => {
+        return res.data
+      })
+      return year;
+     }
 
     useEffect(() => {
       const fetchData = async() => {
           setIsLoading(true);
           try {
-              const result = await api.get('/tech')
-              setTech(result.data)
-              await GetName();
+              const techs = await api.get('/tech')
+              const names = await api.get('/names')
+              const dates = await Promise.all(names.data.map(name => getYear(name))).then(data => {
+                return data
+              })
+
+              let age = []
+              dates.map(x => 
+                x.Death ?
+                  age.push(moment(`${x.Death}`).diff(moment(`${x.Birth}`), 'years')) : 
+                  age.push(moment(moment()).diff(moment(`${x.Birth}`), 'years'))
+              )
+              
+              for (var x = 0; x < techs.data.length; x++) {
+                  var element = {
+                    "name" : names.data[x],
+                    "tech" : techs.data[x],
+                    "years": age[x]
+                  };
+                  data.push(element);
+              }
+              JSON.stringify(data);
+              setData(data);
           } catch (error){
               setIsError(true);
           }
@@ -50,25 +61,6 @@ const UserContextProvider = props => {
       } 
       fetchData();
     }, []);
-
-    let age = []
-    date.map(x => 
-      x.Death ?
-        age.push(moment(`${x.Death}`).diff(moment(`${x.Birth}`), 'years')) : 
-        age.push(moment(moment()).diff(moment(`${x.Birth}`), 'years'))
-    )
-
-    var len = name.length;
-    var data = []
-    for (var x = 0; x < len; x++) {
-        var element = {
-          "name" : name[x],
-          "tech" : tech[x],
-          "year": age[x]
-        };
-        data.push(element);
-    }
-    JSON.stringify(data);
     
 
   return (
@@ -77,7 +69,6 @@ const UserContextProvider = props => {
         toggleTheme,
         data,
         isLoading,
-        date,
         matrix
       }}
     >
