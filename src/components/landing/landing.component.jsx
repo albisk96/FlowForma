@@ -7,12 +7,12 @@ const LandingPage = () => {
     const { matrix } = useContext(UserContext);
 
     const landingStyle = matrix ? {
-        background: 'black', 
+        background: 'radial-gradient(circle, rgba(0,156,31,1) 45%, rgba(0,0,0,1) 100%)', 
         color: 'lime',
         height: '100vh',
         overflow: 'hidden'
     } :  {
-        background: '', 
+        background: 'white', 
         color: 'black',
         height: '100vh',
         overflow: 'hidden'
@@ -32,7 +32,7 @@ const LandingPage = () => {
             <h2>Users Table</h2>
             <SwitchButton />
         </div>
-        <div className="container" style={landingStyle}>
+        <div className="container" >
           <UserTable style={tableStyle} />
         </div>
     </div>

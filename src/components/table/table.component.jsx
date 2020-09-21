@@ -16,7 +16,7 @@ const UserTable = ({ style }) => {
       }
 
     const render = isLoading || dataLen === 0 ? <Spinner /> 
-        : <Table striped bordered hover size="sm" style={style}>
+        : <Table striped bordered size="sm" style={style}>
             <thead>
                 <tr>
                 <Overlay>
